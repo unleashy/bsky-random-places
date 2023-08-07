@@ -1,0 +1,27 @@
+name: Activate bot
+
+on:
+  workflow_dispatch:
+# Enable this when the bot is reasonably done!~
+#  schedule:
+#    - cron: "30 5,17 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install
+        run: yarn install --immutable
+
+      - name: Execute
+        run: yarn build-then-run
+        env:
+          NODE_ENV: production

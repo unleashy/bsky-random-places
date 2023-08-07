@@ -1,0 +1,20 @@
+{
+  "name": "bsky-random-places",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "pkgroll",
+    "build-then-run": "pkgroll && node ./dist/index.js",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^18.17.3",
+    "pkgroll": "^1.11.0",
+    "prettier": "2.8.8",
+    "typescript": "5.1.6",
+    "vitest": "^0.34.1"
+  },
+  "packageManager": "yarn@3.6.1"
+}
