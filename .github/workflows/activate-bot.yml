@@ -25,3 +25,5 @@ jobs:
         run: yarn build-then-run
         env:
           NODE_ENV: production
+          BSKY_IDENTIFIER: ${{ secrets.BSKY_IDENTIFIER }}
+          BSKY_PASSWORD: ${{ secrets.BSKY_PASSWORD }}
