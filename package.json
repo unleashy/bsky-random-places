@@ -9,6 +9,10 @@
     "build-then-run": "pkgroll && node ./dist/index.js",
     "test": "vitest"
   },
+  "dependencies": {
+    "@atproto/api": "^0.5.2",
+    "typanion": "^3.14.0"
+  },
   "devDependencies": {
     "@types/node": "^18.17.3",
     "pkgroll": "^1.11.0",

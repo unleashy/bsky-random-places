@@ -5,6 +5,82 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@atproto/api@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@atproto/api@npm:0.5.2"
+  dependencies:
+    "@atproto/common-web": "*"
+    "@atproto/uri": "*"
+    "@atproto/xrpc": "*"
+    tlds: ^1.234.0
+    typed-emitter: ^2.1.0
+  checksum: 0217f005b5a2033dc7cd585e2516804eee0810ad442cc3af55453b04c47ff93f596b897a5ad92420a3ebfb568796b0ad8ed5603ecc8d75676c159a6f4cd0075f
+  languageName: node
+  linkType: hard
+
+"@atproto/common-web@npm:*":
+  version: 0.2.0
+  resolution: "@atproto/common-web@npm:0.2.0"
+  dependencies:
+    graphemer: ^1.4.0
+    multiformats: ^9.6.4
+    uint8arrays: 3.0.0
+    zod: ^3.21.4
+  checksum: b7ba19eb3cb1ff545c86c989a07e290137433fb7be159ff09b1a17f6dcbd9f8e69f819447d344a6540a01b4b7cb6cdda84de9b064083ecf721b315047f94f5e7
+  languageName: node
+  linkType: hard
+
+"@atproto/identifier@npm:*":
+  version: 0.2.0
+  resolution: "@atproto/identifier@npm:0.2.0"
+  dependencies:
+    "@atproto/common-web": "*"
+  checksum: 5a6e4c4ff0b76d74c9bd0dbd11be0b9eb0201410aa5b379dcbab9b5106ba4533e5e65ea44548cee86b6d4e665f62d0bc42c66026330154c1f177877d70c0e09e
+  languageName: node
+  linkType: hard
+
+"@atproto/lexicon@npm:*":
+  version: 0.2.0
+  resolution: "@atproto/lexicon@npm:0.2.0"
+  dependencies:
+    "@atproto/common-web": "*"
+    "@atproto/identifier": "*"
+    "@atproto/nsid": "*"
+    "@atproto/uri": "*"
+    iso-datestring-validator: ^2.2.2
+    multiformats: ^9.6.4
+    zod: ^3.21.4
+  checksum: 1d7872712e611c48b9636a5b2823a239408593311edb5a937d3b7de20d14bbd84ffa29efcb48dde7d2193bd17292c1503b3e4fe5ff527391a1a2dd4f3ae8768d
+  languageName: node
+  linkType: hard
+
+"@atproto/nsid@npm:*":
+  version: 0.1.0
+  resolution: "@atproto/nsid@npm:0.1.0"
+  checksum: 1f3678586730dfaf0a21394ad46e8d561748e948c6d1451b7b18db54ec9c80e44476b82f9fd704e757b8a3d6ef65c4b568aa903f6c41d90c7753832dcdab2058
+  languageName: node
+  linkType: hard
+
+"@atproto/uri@npm:*":
+  version: 0.1.0
+  resolution: "@atproto/uri@npm:0.1.0"
+  dependencies:
+    "@atproto/identifier": "*"
+    "@atproto/nsid": "*"
+  checksum: a0a1c57b89b2c82ac3de466208a01b0a0b8474b9003e33b7296b87897c7bd2e618852430cb0052bac02d752c379445ff0191c48570b5675e7520a80dcc8a7a68
+  languageName: node
+  linkType: hard
+
+"@atproto/xrpc@npm:*":
+  version: 0.2.0
+  resolution: "@atproto/xrpc@npm:0.2.0"
+  dependencies:
+    "@atproto/lexicon": "*"
+    zod: ^3.21.4
+  checksum: a33d277dd639aa61c9e3bf08929d56dfd6aa18491394615f240ca420ec160dd68e28883b06ad9b8eea7862be1a9bad8baaf00a8c5ed4d915a3d9dc7eadb91ade
+  languageName: node
+  linkType: hard
+
 "@esbuild/android-arm64@npm:0.18.19":
   version: 0.18.19
   resolution: "@esbuild/android-arm64@npm:0.18.19"
@@ -571,9 +647,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "bsky-random-places@workspace:."
   dependencies:
+    "@atproto/api": ^0.5.2
     "@types/node": ^18.17.3
     pkgroll: ^1.11.0
     prettier: 2.8.8
+    typanion: ^3.14.0
     typescript: 5.1.6
     vitest: ^0.34.1
   languageName: unknown
@@ -1016,6 +1094,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphemer@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "graphemer@npm:1.4.0"
+  checksum: bab8f0be9b568857c7bec9fda95a89f87b783546d02951c40c33f84d05bb7da3fd10f863a9beb901463669b6583173a8c8cc6d6b306ea2b9b9d5d3d943c3a673
+  languageName: node
+  linkType: hard
+
 "has-unicode@npm:^2.0.1":
   version: 2.0.1
   resolution: "has-unicode@npm:2.0.1"
@@ -1168,6 +1253,13 @@ __metadata:
   version: 2.0.0
   resolution: "isexe@npm:2.0.0"
   checksum: 26bf6c5480dda5161c820c5b5c751ae1e766c587b1f951ea3fcfc973bafb7831ae5b54a31a69bd670220e42e99ec154475025a468eae58ea262f813fdc8d1c62
+  languageName: node
+  linkType: hard
+
+"iso-datestring-validator@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "iso-datestring-validator@npm:2.2.2"
+  checksum: a91897707c99d6efb18b9b07d30ae6c7b60cfaed480aff37598471262bbd6715f77ce29078ccb655f3946a1cb28279637ef9db681152569d09895e6c3aee9892
   languageName: node
   linkType: hard
 
@@ -1414,6 +1506,13 @@ __metadata:
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
   checksum: aa92de608021b242401676e35cfa5aa42dd70cbdc082b916da7fb925c542173e36bce97ea3e804923fe92c0ad991434e4a38327e15a1b5b5f945d66df615ae6d
+  languageName: node
+  linkType: hard
+
+"multiformats@npm:^9.4.2, multiformats@npm:^9.6.4":
+  version: 9.9.0
+  resolution: "multiformats@npm:9.9.0"
+  checksum: d3e8c1be400c09a014f557ea02251a2710dbc9fca5aa32cc702ff29f636c5471e17979f30bdcb0a9cbb556f162a8591dc2e1219c24fc21394a56115b820bb84e
   languageName: node
   linkType: hard
 
@@ -1730,6 +1829,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rxjs@npm:*":
+  version: 7.8.1
+  resolution: "rxjs@npm:7.8.1"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: de4b53db1063e618ec2eca0f7965d9137cabe98cf6be9272efe6c86b47c17b987383df8574861bcced18ebd590764125a901d5506082be84a8b8e364bf05f119
+  languageName: node
+  linkType: hard
+
 "safe-buffer@npm:~5.2.0":
   version: 5.2.1
   resolution: "safe-buffer@npm:5.2.1"
@@ -1964,10 +2072,45 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tlds@npm:^1.234.0":
+  version: 1.240.0
+  resolution: "tlds@npm:1.240.0"
+  bin:
+    tlds: bin.js
+  checksum: c4bfb0bbfde2f7533f79f7aa49d137e37e5c2f41680bb90a32f588386ac908e23132a61675e5e207e7cb06e7fcf77242b9f44040793de9dc4ca0193dcbcda923
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.1.0":
+  version: 2.6.1
+  resolution: "tslib@npm:2.6.1"
+  checksum: b0d176d176487905b66ae4d5856647df50e37beea7571c53b8d10ba9222c074b81f1410fb91da13debaf2cbc970663609068bdebafa844ea9d69b146527c38fe
+  languageName: node
+  linkType: hard
+
+"typanion@npm:^3.14.0":
+  version: 3.14.0
+  resolution: "typanion@npm:3.14.0"
+  checksum: fc0590d02c13c659eb1689e8adf7777e6c00dc911377e44cd36fe1b1271cfaca71547149f12cdc275058c0de5562a14e5273adbae66d47e6e0320e36007f5912
+  languageName: node
+  linkType: hard
+
 "type-detect@npm:^4.0.0, type-detect@npm:^4.0.5":
   version: 4.0.8
   resolution: "type-detect@npm:4.0.8"
   checksum: 62b5628bff67c0eb0b66afa371bd73e230399a8d2ad30d852716efcc4656a7516904570cd8631a49a3ce57c10225adf5d0cbdcb47f6b0255fe6557c453925a15
+  languageName: node
+  linkType: hard
+
+"typed-emitter@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "typed-emitter@npm:2.1.0"
+  dependencies:
+    rxjs: "*"
+  dependenciesMeta:
+    rxjs:
+      optional: true
+  checksum: 95821a9e05784b972cc9d152891fd12a56cb4b1a7c57e768c02bea6a8984da7aff8f19404a7b69eea11fae2a3b6c0c510a4c510f575f50162c759ae9059f2520
   languageName: node
   linkType: hard
 
@@ -1995,6 +2138,15 @@ __metadata:
   version: 1.2.0
   resolution: "ufo@npm:1.2.0"
   checksum: eaac059b5fd64a6f80557093a49bb6bfd5d97aca433e641d5022db9cbd4be3e6a4011d2ffe1254cdb2fc8ab5cbe9942b0af834ee7ac7c63240ab542f5981f68e
+  languageName: node
+  linkType: hard
+
+"uint8arrays@npm:3.0.0":
+  version: 3.0.0
+  resolution: "uint8arrays@npm:3.0.0"
+  dependencies:
+    multiformats: ^9.4.2
+  checksum: 58470e687140e64a7fa08ab66b64777b75f105bf78180324448dc798436beacf0bd322cd2b58d20ca4cfa2e091f58e4b52d008e95f21d0ade16c1102b5d23ad3
   languageName: node
   linkType: hard
 
@@ -2211,5 +2363,12 @@ __metadata:
   version: 1.0.0
   resolution: "yocto-queue@npm:1.0.0"
   checksum: 2cac84540f65c64ccc1683c267edce396b26b1e931aa429660aefac8fbe0188167b7aee815a3c22fa59a28a58d898d1a2b1825048f834d8d629f4c2a5d443801
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.21.4":
+  version: 3.21.4
+  resolution: "zod@npm:3.21.4"
+  checksum: f185ba87342ff16f7a06686767c2b2a7af41110c7edf7c1974095d8db7a73792696bcb4a00853de0d2edeb34a5b2ea6a55871bc864227dace682a0a28de33e1f
   languageName: node
   linkType: hard
