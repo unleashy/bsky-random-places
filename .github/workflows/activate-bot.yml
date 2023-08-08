@@ -27,3 +27,5 @@ jobs:
           NODE_ENV: production
           BSKY_IDENTIFIER: ${{ secrets.BSKY_IDENTIFIER }}
           BSKY_PASSWORD: ${{ secrets.BSKY_PASSWORD }}
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
+          MAPS_SIGNING_SECRET: ${{ secrets.MAPS_SIGNING_SECRET }}

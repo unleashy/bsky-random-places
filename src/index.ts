@@ -1,10 +1,12 @@
 import { env } from "node:process";
-import type { BskyAgent as BskyAgentT } from "@atproto/api";
-import atproto from "@atproto/api";
-import { getLoginOpts } from "./config.ts";
+import { getLoginOpts, getMapsOpts } from "./config.ts";
+import { Maps } from "./maps.ts";
+import { Bsky } from "./bsky.ts";
+import { Bot } from "./bot.ts";
 
-// @ts-expect-error: atproto oesn't have proper exports, so we have to do this
-const { BskyAgent } = atproto;
+const mapsOpts = getMapsOpts(env);
+const loginOpts = getLoginOpts(env);
 
-const agent: BskyAgentT = new BskyAgent({ service: "https://bsky.social" });
-await agent.login(getLoginOpts(env));
+const bot = new Bot(new Maps(mapsOpts), await Bsky.login(loginOpts));
+
+await bot.run();
