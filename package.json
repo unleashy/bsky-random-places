@@ -1,0 +1,33 @@
+{
+  "name": "bsky-random-places",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": "./dist/bin.mjs",
+  "scripts": {
+    "build": "unbuild",
+    "lint": "prettier --check . && eslint .",
+    "format": "prettier --write .",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.8.0",
+    "@types/eslint": "^9.6.0",
+    "@types/node": "^22.0.0",
+    "better-typescript-lib": "^2.8.0",
+    "eslint": "^9.8.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-sonarjs": "^1.0.4",
+    "eslint-plugin-unicorn": "^55.0.0",
+    "fast-check": "^3.20.0",
+    "globals": "^15.8.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.0-alpha.58",
+    "unbuild": "^3.0.0-rc.7",
+    "vitest": "^2.0.4"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "yarn@4.4.1"
+}
