@@ -10,21 +10,22 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@eslint/js": "^9.8.0",
-    "@types/eslint": "^9.6.0",
-    "@types/node": "^22.0.0",
+    "@eslint/js": "^9.9.1",
+    "@types/eslint": "^9.6.1",
+    "@types/geojson": "^7946.0.14",
+    "@types/node": "^22.5.4",
     "better-typescript-lib": "^2.8.0",
-    "eslint": "^9.8.0",
+    "eslint": "^9.9.1",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-sonarjs": "^1.0.4",
+    "eslint-plugin-sonarjs": "^2.0.2",
     "eslint-plugin-unicorn": "^55.0.0",
-    "fast-check": "^3.20.0",
-    "globals": "^15.8.0",
+    "fast-check": "^3.22.0",
+    "globals": "^15.9.0",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.0-alpha.58",
+    "typescript-eslint": "^8.4.0",
     "unbuild": "^3.0.0-rc.7",
-    "vitest": "^2.0.4"
+    "vitest": "^2.0.5"
   },
   "engines": {
     "node": ">=20"
