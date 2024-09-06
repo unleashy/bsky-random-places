@@ -20,3 +20,6 @@ Then build with `yarn build` and deploy by running the `bin.mjs` file in `dist`.
 ## Licence
 
 [MIT](LICENSE.txt)
+
+`countries.json.br` sourced from [World Bank](https://datacatalog.worldbank.org/search/dataset/0038272/World-Bank-Official-Boundaries),
+and then transformed from Shapefile to Brotli-compressed GeoJSON by me
