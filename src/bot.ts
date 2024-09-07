@@ -1,13 +1,14 @@
-import fs from "node:fs/promises";
-import { type Maps } from "./maps.ts";
 import { type CountryData, mapToCountry, selectRandomCountry } from "./geo.ts";
+import { type Maps } from "./maps.ts";
+import { type Bluesky } from "./bluesky.ts";
 
 const MAX_POSITION_ATTEMPTS = 1000;
 
 export class Bot {
   constructor(
-    private readonly maps: Maps,
     private readonly countryData: CountryData,
+    private readonly maps: Maps,
+    private readonly bluesky: Bluesky,
   ) {}
 
   async run(): Promise<void> {
@@ -28,8 +29,11 @@ export class Bot {
         this.maps.getAddress(meta.position),
       ]);
 
-      console.log(`address: ${address}`);
-      await fs.writeFile("test.jpg", imagery.image.stream());
+      await this.bluesky.post(
+        address ?? "Unknown location",
+        imagery,
+        new Date(),
+      );
 
       break;
     }

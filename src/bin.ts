@@ -1,4 +1,4 @@
-import { Bot, getCountryData, LoggingMaps } from "./index.ts";
+import { Bluesky, Bot, getCountryData, LoggingMaps } from "./index.ts";
 
 function requireEnv(key: string): string {
   let value = process.env[key];
@@ -14,6 +14,7 @@ let countryData = await getCountryData(
 );
 
 let bot = new Bot(
+  countryData,
   new LoggingMaps(
     {
       size: "640x480",
@@ -23,7 +24,11 @@ let bot = new Bot(
     },
     requireEnv("BSKY_RANDOM_PLACES_MAPS_SECRET"),
   ),
-  countryData,
+  await Bluesky.login({
+    service: "https://bsky.social",
+    identifier: requireEnv("BSKY_RANDOM_PLACES_USERNAME"),
+    password: requireEnv("BSKY_RANDOM_PLACES_PASSWORD"),
+  }),
 );
 
 await bot.run();
