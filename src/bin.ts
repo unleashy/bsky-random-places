@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import { getCountryData, selectRandomCountry, mapToCountry } from "./index.ts";
 import { fetchStreetView } from "./maps.ts";
-import { booleanPointInPolygon } from "@turf/turf";
 
 function requireEnv(key: string): string {
   let value = process.env[key];
@@ -42,7 +41,10 @@ while (true) {
 
   console.log(`fetching ${position.toReversed().join(", ")}`);
   let imagery = await fetchStreetView(position, {
-    url: "https://maps.googleapis.com/maps/api/streetview",
+    urls: {
+      imagery: "https://maps.googleapis.com/maps/api/streetview",
+      metadata: "https://maps.googleapis.com/maps/api/streetview/metadata",
+    },
     params: {
       size: "768x480",
       fov: "60",
@@ -57,8 +59,8 @@ while (true) {
     continue;
   }
 
-  await fs.writeFile("test.png", imagery.image);
-  console.log(`done ${iso} at ${position.toReversed().join(", ")}`);
+  await fs.writeFile("test.jpg", imagery.image);
+  console.log(`done ${iso} at ${imagery.position.toReversed().join(", ")}`);
 
   break;
 }
