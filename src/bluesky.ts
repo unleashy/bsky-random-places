@@ -4,6 +4,7 @@ import {
   CredentialSession,
   RichText,
 } from "@atproto/api";
+import { type Position } from "geojson";
 import { type Imagery } from "./maps.ts";
 
 export interface LoginOptions {
@@ -23,9 +24,29 @@ export class Bluesky {
     return new Bluesky(agent);
   }
 
-  async post(text: string, imagery: Imagery, date: Date): Promise<void> {
-    let rt = new RichText({ text });
-    await rt.detectFacets(this.agent);
+  async post(
+    address: string,
+    position: Position,
+    imagery: Imagery,
+    date: Date,
+  ): Promise<void> {
+    let link = `🌎 ${address}\n🗺️ View on Google Maps`;
+    let rt = new RichText({
+      text: link,
+      facets: [],
+    });
+    rt.facets?.push({
+      index: {
+        byteStart: rt.unicodeText.utf16IndexToUtf8Index(link.indexOf("🗺️")),
+        byteEnd: rt.unicodeText.utf16IndexToUtf8Index(link.length),
+      },
+      features: [
+        {
+          $type: "app.bsky.richtext.facet#link",
+          uri: `https://google.com/maps/place/${position.toReversed().join(",")}/data=!3m1!1e3!4m2!3m1!1s0x0:0x0`,
+        },
+      ],
+    });
 
     let { data } = await this.agent.uploadBlob(imagery.image, {
       headers: { "Content-Type": imagery.mime },

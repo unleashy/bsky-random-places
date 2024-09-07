@@ -31,6 +31,7 @@ export class Bot {
 
       await this.bluesky.post(
         address ?? "Unknown location",
+        position,
         imagery,
         new Date(),
       );
