@@ -1,86 +1,134 @@
-import { createHmac } from "node:crypto";
 import { type Position } from "geojson";
-import { round } from "@turf/turf";
+import { Type } from "@sinclair/typebox";
+import { TypeCompiler } from "@sinclair/typebox/compiler";
+import { UrlBuilder } from "./url-builder.ts";
+
+export interface ImageryMetadata {
+  pano: string;
+  position: Position;
+  copyright: string;
+}
 
 export interface Imagery {
-  image: Uint8Array;
+  image: Blob;
   mime: string;
-  position: Position;
 }
 
-export interface FetchStreetViewOptions {
-  urls: {
-    imagery: string;
-    metadata: string;
-  };
-  key: string;
-  secret: string;
-  params: Record<string, string>;
+const MetadataResponse = TypeCompiler.Compile(
+  Type.Union([
+    Type.Object(
+      {
+        status: Type.Literal("OK"),
+        copyright: Type.String(),
+        location: Type.Object({
+          lat: Type.Number(),
+          lng: Type.Number(),
+        }),
+        pano_id: Type.String(),
+      },
+      { additionalProperties: true },
+    ),
+    Type.Object({
+      status: Type.Union([
+        Type.Literal("ZERO_RESULTS"),
+        Type.Literal("NOT_FOUND"),
+        Type.Literal("OVER_QUERY_LIMIT"),
+        Type.Literal("REQUEST_DENIED"),
+        Type.Literal("INVALID_REQUEST"),
+        Type.Literal("UNKNOWN_ERROR"),
+      ]),
+    }),
+  ]),
+);
+
+export class Maps {
+  constructor(
+    private readonly params: { key: string } & Record<string, string>,
+    private readonly secret: string,
+  ) {}
+
+  async tryGetMetadata(
+    position: Position,
+  ): Promise<ImageryMetadata | undefined> {
+    let url = new UrlBuilder({
+      base: "https://maps.googleapis.com/maps/api/streetview/metadata",
+      params: this.params,
+    })
+      .addParam("location", position.toReversed().join(","))
+      .addSignature(this.secret)
+      .toUrl();
+
+    let res = await fetch(url);
+    if (!res.ok) return;
+
+    let body = await res.json();
+    let metadata = MetadataResponse.Decode(body);
+    if (["ZERO_RESULTS", "NOT_FOUND"].includes(metadata.status)) return;
+    if (metadata.status !== "OK") throw await mapsError(res, body);
+
+    return {
+      pano: metadata.pano_id,
+      copyright: metadata.copyright,
+      position: [metadata.location.lng, metadata.location.lat],
+    };
+  }
+
+  async getImagery(pano: string): Promise<Imagery> {
+    let url = new UrlBuilder({
+      base: "https://maps.googleapis.com/maps/api/streetview",
+      params: this.params,
+    })
+      .addParam("pano", pano)
+      .addParam("return_error_code", "true")
+      .addSignature(this.secret)
+      .toUrl();
+
+    let res = await fetch(url);
+    if (!res.ok) throw await mapsError(res);
+
+    return {
+      image: await res.blob(),
+      mime: res.headers.get("Content-Type")!,
+    };
+  }
 }
 
-export async function fetchStreetView(
-  pos: Position,
-  options: FetchStreetViewOptions,
-): Promise<Imagery | undefined> {
-  let metaRes = await fetch(buildUrl(options.urls.metadata, pos, options));
-  if (!metaRes.ok) return undefined;
+export class LoggingMaps extends Maps {
+  override async tryGetMetadata(
+    position: Position,
+  ): Promise<ImageryMetadata | undefined> {
+    let result = await super.tryGetMetadata(position);
+    if (result === undefined)
+      console.log(`no imagery at ${position.toReversed().join(", ")}`);
 
-  let meta = (await metaRes.json()) as Record<string, unknown>;
-  if (meta["status"] !== "OK") return undefined;
-
-  let pano = meta["pano_id"] as string;
-  let location = meta["location"] as { lat: number; lng: number };
-
-  let res = await fetch(buildUrl2(options.urls.imagery, pano, options));
-  if (!res.ok) throw new Error("bad response from imagery URL");
-
-  return {
-    image: new Uint8Array(await res.arrayBuffer()),
-    mime: res.headers.get("Content-Type")!,
-    position: [location.lng, location.lat].map((it) => round(it, 6)),
-  };
+    return result;
+  }
 }
 
-function buildUrl(
-  base: string,
-  pos: Position,
-  options: FetchStreetViewOptions,
-) {
-  let url = new URL(base);
+async function mapsError(response: Response, body?: unknown): Promise<Error> {
+  let headersString = "";
+  response.headers.forEach((v, k) => (headersString += `${k}: ${v}\n`));
+  headersString = headersString.trim();
 
-  for (let [key, value] of Object.entries(options.params))
-    url.searchParams.set(key, value);
-  url.searchParams.set("location", pos.toReversed().join(","));
-  url.searchParams.set("return_error_code", "true");
-  url.searchParams.set("key", options.key);
+  let responseBody = "(binary response body)";
+  if (body === undefined) {
+    const contentType = response.headers.get("Content-Type") ?? "";
+    if (
+      contentType.startsWith("text") ||
+      contentType.startsWith("application/json")
+    ) {
+      responseBody = await response.text();
+    }
+  } else {
+    responseBody = String(body);
+  }
 
-  let signature = sign(url.pathname + url.search, options.secret);
-  url.searchParams.set("signature", signature);
-
-  return url;
-}
-
-function buildUrl2(
-  base: string,
-  pano: string,
-  options: FetchStreetViewOptions,
-) {
-  let url = new URL(base);
-
-  for (let [key, value] of Object.entries(options.params))
-    url.searchParams.set(key, value);
-  url.searchParams.set("pano", pano);
-  url.searchParams.set("return_error_code", "true");
-  url.searchParams.set("key", options.key);
-
-  let signature = sign(url.pathname + url.search, options.secret);
-  url.searchParams.set("signature", signature);
-
-  return url;
-}
-
-function sign(subject: string, secret: string): string {
-  return createHmac("sha1", Buffer.from(secret, "base64url"))
-    .update(subject)
-    .digest("base64url");
+  return new Error(
+    `Google Maps API fetch was not successful.\n` +
+      `URL: ${response.url}\n` +
+      `Response:\n` +
+      `${response.status} ${response.statusText}\n` +
+      `${headersString}\n\n` +
+      `${responseBody}`,
+  );
 }

@@ -10,6 +10,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@sinclair/typebox": "^0.33.9",
     "@turf/turf": "^7.1.0"
   },
   "devDependencies": {

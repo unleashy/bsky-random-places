@@ -19,12 +19,12 @@ export async function getCountryData(path: string): Promise<CountryData> {
 export function selectRandomCountry(
   cd: CountryData,
   r: number,
-): [string, CountryPolygon] {
+): CountryPolygon {
   let cs = Object.keys(cd);
   let i = Math.floor(denorm(r, 0, cs.length));
   let c = cs[i];
 
-  return [c, cd[c]];
+  return cd[c];
 }
 
 export function mapToCountry(

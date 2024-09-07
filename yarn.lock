@@ -2209,6 +2209,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sinclair/typebox@npm:^0.33.9":
+  version: 0.33.9
+  resolution: "@sinclair/typebox@npm:0.33.9"
+  checksum: 10c0/2e0009d7147ae41cca6557a39634e402e6e81026acb911a4de786aa1200ce27f7b4488e1ad77dc990789617a221f3347da2b3b122955a01c4df556b34ce1dd92
+  languageName: node
+  linkType: hard
+
 "@trysound/sax@npm:0.2.0":
   version: 0.2.0
   resolution: "@trysound/sax@npm:0.2.0"
@@ -4838,6 +4845,7 @@ __metadata:
   resolution: "bsky-random-places@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.9.1"
+    "@sinclair/typebox": "npm:^0.33.9"
     "@turf/turf": "npm:^7.1.0"
     "@types/eslint": "npm:^9.6.1"
     "@types/geojson": "npm:^7946.0.14"
