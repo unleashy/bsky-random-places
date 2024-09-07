@@ -2,7 +2,7 @@ import fs from "node:fs";
 import zlib from "node:zlib";
 import { json } from "node:stream/consumers";
 import { type MultiPolygon, type Polygon, type Position } from "geojson";
-import { booleanPointInPolygon, bbox } from "@turf/turf";
+import { booleanPointInPolygon, bbox, round } from "@turf/turf";
 
 export type CountryPolygon = Polygon | MultiPolygon;
 
@@ -21,31 +21,25 @@ export async function getCountryData(path: string): Promise<CountryData> {
 export function selectRandomCountry(
   cd: CountryData,
   r: number,
-): CountryPolygon {
+): [string, CountryPolygon] {
   let cs = Object.keys(cd);
   let i = Math.floor(denorm(r, 0, cs.length));
+  let c = cs[i];
 
-  return cd[cs[i]];
+  return [c, cd[c]];
 }
 
 export function mapToCountry(
   c: CountryPolygon,
-  [rlat, rlong]: Position,
+  [rlong, rlat]: Position,
 ): Position | undefined {
   let b = bbox(c);
-  let attempt = [denorm(rlat, b[0], b[2]), denorm(rlong, b[1], b[3])];
-  return booleanPointInPolygon(attempt, c) ? attempt : undefined;
+  let attempt = [denorm(rlong, b[0], b[2]), denorm(rlat, b[1], b[3])];
+  return booleanPointInPolygon(attempt, c)
+    ? attempt.map((it) => round(it, 6))
+    : undefined;
 }
 
 function denorm(r: number, min: number, max: number): number {
   return min + r * (max - min);
-}
-
-export function attempt<T>(max: number, f: () => T | undefined): T | undefined {
-  for (let i = 0; i < max; i++) {
-    let result = f();
-    if (result !== undefined) return result;
-  }
-
-  return undefined;
 }
