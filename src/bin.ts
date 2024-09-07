@@ -1,6 +1,10 @@
 import fs from "node:fs/promises";
-import { getCountryData, selectRandomCountry, mapToCountry } from "./index.ts";
-import { fetchStreetView } from "./maps.ts";
+import {
+  getCountryData,
+  selectRandomCountry,
+  mapToCountry,
+  fetchStreetView,
+} from "./index.ts";
 
 function requireEnv(key: string): string {
   let value = process.env[key];
