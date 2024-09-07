@@ -22,7 +22,12 @@ export class Bot {
       let meta = await this.maps.tryGetMetadata(position);
       if (!meta) continue;
 
-      let imagery = await this.maps.getImagery(meta.pano);
+      let [imagery, address] = await Promise.all([
+        this.maps.getImagery(meta.pano),
+        this.maps.getAddress(meta.position),
+      ]);
+
+      console.log(`address: ${address}`);
       await fs.writeFile("test.jpg", imagery.image.stream());
 
       break;

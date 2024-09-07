@@ -14,30 +14,48 @@ export interface Imagery {
   mime: string;
 }
 
+const GoogleError = Type.Object({
+  status: Type.Union([
+    Type.Literal("ZERO_RESULTS"),
+    Type.Literal("NOT_FOUND"),
+    Type.Literal("OVER_QUERY_LIMIT"),
+    Type.Literal("REQUEST_DENIED"),
+    Type.Literal("INVALID_REQUEST"),
+    Type.Literal("UNKNOWN_ERROR"),
+  ]),
+});
+
 const MetadataResponse = TypeCompiler.Compile(
   Type.Union([
-    Type.Object(
-      {
-        status: Type.Literal("OK"),
-        copyright: Type.String(),
-        location: Type.Object({
-          lat: Type.Number(),
-          lng: Type.Number(),
-        }),
-        pano_id: Type.String(),
-      },
-      { additionalProperties: true },
-    ),
     Type.Object({
-      status: Type.Union([
-        Type.Literal("ZERO_RESULTS"),
-        Type.Literal("NOT_FOUND"),
-        Type.Literal("OVER_QUERY_LIMIT"),
-        Type.Literal("REQUEST_DENIED"),
-        Type.Literal("INVALID_REQUEST"),
-        Type.Literal("UNKNOWN_ERROR"),
-      ]),
+      status: Type.Literal("OK"),
+      copyright: Type.String(),
+      location: Type.Object({
+        lat: Type.Number(),
+        lng: Type.Number(),
+      }),
+      pano_id: Type.String(),
     }),
+    GoogleError,
+  ]),
+);
+
+const AddressResponse = TypeCompiler.Compile(
+  Type.Union([
+    Type.Object({
+      status: Type.Literal("OK"),
+      plus_code: Type.Optional(
+        Type.Object({
+          compound_code: Type.String(),
+        }),
+      ),
+      results: Type.Array(
+        Type.Object({
+          formatted_address: Type.String(),
+        }),
+      ),
+    }),
+    GoogleError,
   ]),
 );
 
@@ -91,6 +109,28 @@ export class Maps {
       mime: res.headers.get("Content-Type")!,
     };
   }
+
+  async getAddress(position: Position): Promise<string | undefined> {
+    let url = new UrlBuilder({
+      base: "https://maps.googleapis.com/maps/api/geocode/json",
+      params: { key: this.params.key },
+    })
+      .addParam("latlng", position.toReversed().join(","))
+      .toUrl();
+
+    let res = await fetch(url);
+    if (!res.ok) return;
+
+    let body = await res.json();
+    let address = AddressResponse.Decode(body);
+    if (["ZERO_RESULTS", "NOT_FOUND"].includes(address.status)) return;
+    if (address.status !== "OK") throw await mapsError(res, body);
+
+    if (address.results.length === 0) return;
+    return (
+      address.results[0].formatted_address ?? address.plus_code?.compound_code
+    );
+  }
 }
 
 export class LoggingMaps extends Maps {
@@ -103,12 +143,18 @@ export class LoggingMaps extends Maps {
 
     return result;
   }
+
+  override getAddress(position: Position): Promise<string | undefined> {
+    console.log(`getting address for ${position.toReversed().join(", ")}`);
+    return super.getAddress(position);
+  }
 }
 
 async function mapsError(response: Response, body?: unknown): Promise<Error> {
-  let headersString = "";
-  response.headers.forEach((v, k) => (headersString += `${k}: ${v}\n`));
-  headersString = headersString.trim();
+  let headersString = [...response.headers.entries()]
+    .map(([k, v]) => `${k}: ${v}`)
+    .join("\n")
+    .trim();
 
   let responseBody = "(binary response body)";
   if (body === undefined) {
