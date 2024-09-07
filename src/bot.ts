@@ -21,6 +21,7 @@ export class Bot {
 
       let meta = await this.maps.tryGetMetadata(position);
       if (!meta) continue;
+      if (!meta.copyright.includes("Google")) continue;
 
       let [imagery, address] = await Promise.all([
         this.maps.getImagery(meta.pano),

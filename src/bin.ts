@@ -16,7 +16,7 @@ let countryData = await getCountryData(
 let bot = new Bot(
   new LoggingMaps(
     {
-      size: "640x640",
+      size: "640x480",
       fov: "60",
       radius: "1000",
       key: requireEnv("BSKY_RANDOM_PLACES_MAPS_KEY"),
