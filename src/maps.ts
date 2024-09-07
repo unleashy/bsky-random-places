@@ -44,11 +44,6 @@ const AddressResponse = TypeCompiler.Compile(
   Type.Union([
     Type.Object({
       status: Type.Literal("OK"),
-      plus_code: Type.Optional(
-        Type.Object({
-          compound_code: Type.String(),
-        }),
-      ),
       results: Type.Array(
         Type.Object({
           formatted_address: Type.String(),
@@ -102,11 +97,12 @@ export class Maps {
       .toUrl();
 
     let res = await fetch(url);
-    if (!res.ok) throw await mapsError(res);
+    let mime = res.headers.get("Content-Type");
+    if (!(res.ok && mime)) throw await mapsError(res);
 
     return {
       image: await res.blob(),
-      mime: res.headers.get("Content-Type")!,
+      mime,
     };
   }
 
@@ -127,9 +123,7 @@ export class Maps {
     if (address.status !== "OK") throw await mapsError(res, body);
 
     if (address.results.length === 0) return;
-    return (
-      address.results[0].formatted_address ?? address.plus_code?.compound_code
-    );
+    return address.results[0].formatted_address;
   }
 }
 
@@ -175,6 +169,6 @@ async function mapsError(response: Response, body?: unknown): Promise<Error> {
       `Response:\n` +
       `${response.status} ${response.statusText}\n` +
       `${headersString}\n\n` +
-      `${responseBody}`,
+      responseBody,
   );
 }

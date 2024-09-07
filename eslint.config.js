@@ -56,17 +56,7 @@ export default ts.config(
       "unicorn/no-useless-undefined": "off",
       "unicorn/prefer-spread": "off",
       "unicorn/prefer-ternary": "off",
-      "unicorn/prevent-abbreviations": [
-        "error",
-        {
-          allowList: {
-            i: true,
-            args: true,
-            env: true,
-            Env: true,
-          },
-        },
-      ],
+      "unicorn/prevent-abbreviations": "off",
       "sonarjs/cognitive-complexity": ["error", 10],
     },
   },
