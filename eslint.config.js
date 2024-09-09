@@ -54,6 +54,7 @@ export default ts.config(
       "unicorn/consistent-function-scoping": "off",
       "unicorn/no-this-assignment": "off",
       "unicorn/no-useless-undefined": "off",
+      "unicorn/numeric-separators-style": "off",
       "unicorn/prefer-spread": "off",
       "unicorn/prefer-ternary": "off",
       "unicorn/prevent-abbreviations": "off",
