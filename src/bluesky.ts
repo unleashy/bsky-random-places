@@ -59,6 +59,7 @@ export class Bluesky {
         $type: "app.bsky.embed.images",
         images: [{ image: data.blob, alt: "" }],
       },
+      langs: ["en"],
       createdAt: date.toISOString(),
     });
   }
