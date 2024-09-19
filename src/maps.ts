@@ -128,14 +128,11 @@ export class Maps {
 }
 
 export class LoggingMaps extends Maps {
-  override async tryGetMetadata(
+  override tryGetMetadata(
     position: Position,
   ): Promise<ImageryMetadata | undefined> {
-    let result = await super.tryGetMetadata(position);
-    if (result === undefined)
-      console.log(`no imagery at ${position.toReversed().join(", ")}`);
-
-    return result;
+    console.log(`trying imagery at ${position.toReversed().join(", ")}`);
+    return super.tryGetMetadata(position);
   }
 
   override getAddress(position: Position): Promise<string | undefined> {
