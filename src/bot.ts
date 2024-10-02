@@ -2,7 +2,7 @@ import { type CountryData, mapToCountry, selectRandomCountry } from "./geo.ts";
 import { type Maps } from "./maps.ts";
 import { type Bluesky } from "./bluesky.ts";
 
-const MAX_POSITION_ATTEMPTS = 15;
+const MAX_POSITION_ATTEMPTS = 10_000;
 
 export class Bot {
   constructor(
