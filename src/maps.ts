@@ -9,9 +9,15 @@ export interface ImageryMetadata {
   copyright: string;
 }
 
+export interface ImagerySize {
+  width: number;
+  height: number;
+}
+
 export interface Imagery {
   image: Blob;
   mime: string;
+  size: ImagerySize;
 }
 
 const GoogleError = Type.Object({
@@ -56,7 +62,10 @@ const AddressResponse = TypeCompiler.Compile(
 
 export class Maps {
   constructor(
-    private readonly params: { key: string } & Record<string, string>,
+    private readonly params: {
+      key: string;
+      size: `${number}x${number}`;
+    } & Record<string, string>,
     private readonly secret: string,
   ) {}
 
@@ -100,9 +109,14 @@ export class Maps {
     let mime = res.headers.get("Content-Type");
     if (!(res.ok && mime)) throw await mapsError(res);
 
+    let size = this.params.size.split("x").map(Number);
     return {
       image: await res.blob(),
       mime,
+      size: {
+        width: size[0],
+        height: size[1],
+      },
     };
   }
 

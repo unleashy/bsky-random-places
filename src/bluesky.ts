@@ -1,9 +1,4 @@
-import {
-  type Agent,
-  AtpAgent,
-  CredentialSession,
-  RichText,
-} from "@atproto/api";
+import { type Agent, AtpAgent, RichText } from "@atproto/api";
 import { type Position } from "geojson";
 import { type Imagery } from "./maps.ts";
 
@@ -17,8 +12,7 @@ export class Bluesky {
   constructor(private readonly agent: Agent) {}
 
   static async login(options: LoginOptions): Promise<Bluesky> {
-    let session = new CredentialSession(new URL(options.service));
-    let agent = new AtpAgent(session);
+    let agent = new AtpAgent({ service: options.service });
     await agent.login(options);
 
     return new Bluesky(agent);
@@ -57,7 +51,7 @@ export class Bluesky {
       facets: rt.facets,
       embed: {
         $type: "app.bsky.embed.images",
-        images: [{ image: data.blob, alt: "" }],
+        images: [{ image: data.blob, alt: "", aspectRatio: imagery.size }],
       },
       langs: ["en"],
       createdAt: date.toISOString(),
