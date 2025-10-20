@@ -15,7 +15,7 @@ BSKY_RANDOM_PLACES_MAPS_KEY
 BSKY_RANDOM_PLACES_MAPS_SECRET
 ```
 
-Then build with `yarn build` and deploy by running the `bin.mjs` file in `dist`.
+Then run with `bun run ./src/bin.ts`.
 
 ## Licence
 
