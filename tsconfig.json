@@ -20,6 +20,6 @@
     "noPropertyAccessFromIndexSignature": true,
     "useUnknownInCatchVariables": true,
 
-    "types": ["vitest/importMeta"]
+    "types": ["node"]
   }
 }
