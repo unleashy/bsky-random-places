@@ -3,12 +3,6 @@ import { Type } from "@sinclair/typebox";
 import { TypeCompiler } from "@sinclair/typebox/compiler";
 import { UrlBuilder } from "./url-builder.ts";
 
-export interface ImageryMetadata {
-  pano: string;
-  position: Position;
-  copyright: string;
-}
-
 export interface ImagerySize {
   width: number;
   height: number;
@@ -18,6 +12,16 @@ export interface Imagery {
   image: Blob;
   mime: string;
   size: ImagerySize;
+}
+
+export interface Viewpoint {
+  position: Position;
+  imagery: Imagery;
+  address: string | undefined;
+}
+
+export interface Maps {
+  getViewpoint(position: Position): Promise<Viewpoint | undefined>;
 }
 
 const GoogleError = Type.Object({
@@ -60,7 +64,7 @@ const AddressResponse = TypeCompiler.Compile(
   ]),
 );
 
-export class Maps {
+export class GoogleMaps implements Maps {
   constructor(
     private readonly params: {
       key: string;
@@ -69,7 +73,24 @@ export class Maps {
     private readonly secret: string,
   ) {}
 
-  async tryGetMetadata(
+  async getViewpoint(position: Position): Promise<Viewpoint | undefined> {
+    let meta = await this.getMetadata(position);
+    if (!meta) return;
+    if (!meta.copyright.includes("Google")) return;
+
+    let [imagery, address] = await Promise.all([
+      this.getImagery(meta.pano),
+      this.getAddress(meta.position),
+    ]);
+
+    return {
+      position: meta.position,
+      imagery,
+      address,
+    };
+  }
+
+  private async getMetadata(
     position: Position,
   ): Promise<ImageryMetadata | undefined> {
     let url = new UrlBuilder({
@@ -84,18 +105,18 @@ export class Maps {
     if (!res.ok) return;
 
     let body = await res.json();
-    let metadata = MetadataResponse.Decode(body);
-    if (["ZERO_RESULTS", "NOT_FOUND"].includes(metadata.status)) return;
-    if (metadata.status !== "OK") throw await mapsError(res, body);
+    let meta = MetadataResponse.Decode(body);
+    if (["ZERO_RESULTS", "NOT_FOUND"].includes(meta.status)) return;
+    if (meta.status !== "OK") throw await mapsError(res, body);
 
     return {
-      pano: metadata.pano_id,
-      copyright: metadata.copyright,
-      position: [metadata.location.lng, metadata.location.lat],
+      pano: meta.pano_id,
+      copyright: meta.copyright,
+      position: [meta.location.lng, meta.location.lat],
     };
   }
 
-  async getImagery(pano: string): Promise<Imagery> {
+  private async getImagery(pano: string): Promise<Imagery> {
     let url = new UrlBuilder({
       base: "https://maps.googleapis.com/maps/api/streetview",
       params: this.params,
@@ -120,7 +141,7 @@ export class Maps {
     };
   }
 
-  async getAddress(position: Position): Promise<string | undefined> {
+  private async getAddress(position: Position): Promise<string | undefined> {
     let url = new UrlBuilder({
       base: "https://maps.googleapis.com/maps/api/geocode/json",
       params: { key: this.params.key },
@@ -141,18 +162,10 @@ export class Maps {
   }
 }
 
-export class LoggingMaps extends Maps {
-  override tryGetMetadata(
-    position: Position,
-  ): Promise<ImageryMetadata | undefined> {
-    console.log(`trying imagery at ${position.toReversed().join(", ")}`);
-    return super.tryGetMetadata(position);
-  }
-
-  override getAddress(position: Position): Promise<string | undefined> {
-    console.log(`getting address for ${position.toReversed().join(", ")}`);
-    return super.getAddress(position);
-  }
+interface ImageryMetadata {
+  pano: string;
+  position: Position;
+  copyright: string;
 }
 
 async function mapsError(response: Response, body?: unknown): Promise<Error> {
@@ -171,7 +184,7 @@ async function mapsError(response: Response, body?: unknown): Promise<Error> {
       responseBody = await response.text();
     }
   } else {
-    responseBody = String(body);
+    responseBody = JSON.stringify(body) ?? "";
   }
 
   return new Error(
@@ -182,4 +195,19 @@ async function mapsError(response: Response, body?: unknown): Promise<Error> {
       `${headersString}\n\n` +
       responseBody,
   );
+}
+
+export class LoggingMaps implements Maps {
+  constructor(private readonly impl: Maps) {}
+
+  async getViewpoint(position: Position): Promise<Viewpoint | undefined> {
+    console.log(`trying viewpoint ${position.toReversed().join(", ")}`);
+
+    let viewpoint = await this.impl.getViewpoint(position);
+    if (!viewpoint) return undefined;
+
+    console.log(`gotcha! ${viewpoint.position.toReversed().join(", ")}`);
+
+    return viewpoint;
+  }
 }

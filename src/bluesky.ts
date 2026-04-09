@@ -1,6 +1,6 @@
 import { type Agent, AtpAgent, RichText } from "@atproto/api";
-import { type Position } from "geojson";
-import { type Imagery } from "./maps.ts";
+import { emojiForCountryIso, type Survey } from "./geo.ts";
+import { type Viewpoint } from "./maps.ts";
 
 export interface LoginOptions {
   service: string;
@@ -8,23 +8,32 @@ export interface LoginOptions {
   password: string;
 }
 
-export class Bluesky {
-  constructor(private readonly agent: Agent) {}
+export interface SocialService {
+  post(survey: Survey, viewpoint: Viewpoint): Promise<void>;
+}
+
+export class Bluesky implements SocialService {
+  constructor(
+    private readonly date: Date,
+    private readonly agent: Agent,
+  ) {}
 
   static async login(options: LoginOptions): Promise<Bluesky> {
     let agent = new AtpAgent({ service: options.service });
     await agent.login(options);
 
-    return new Bluesky(agent);
+    return new Bluesky(new Date(), agent);
   }
 
   async post(
-    address: string,
-    position: Position,
-    imagery: Imagery,
-    date: Date,
+    survey: Survey,
+    { position, imagery, address }: Viewpoint,
   ): Promise<void> {
-    let link = `🌎 ${address}\n🗺️ View on Google Maps`;
+    address ??= "Unknown location";
+
+    let emoji = emojiForCountryIso(survey.countryIso) ?? "🌎";
+
+    let link = `${emoji} ${address}\n🗺️ View on Google Maps`;
     let rt = new RichText({
       text: link,
       facets: [],
@@ -54,7 +63,7 @@ export class Bluesky {
         images: [{ image: data.blob, alt: "", aspectRatio: imagery.size }],
       },
       langs: ["en"],
-      createdAt: date.toISOString(),
+      createdAt: this.date.toISOString(),
     });
   }
 }

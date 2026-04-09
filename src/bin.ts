@@ -1,4 +1,11 @@
-import { Bluesky, Bot, getCountryData, LoggingMaps } from "./index.ts";
+import {
+  Bluesky,
+  GoogleMaps,
+  LoggingMaps,
+  RandomGeographer,
+  readCountryData,
+  run,
+} from "./index.ts";
 
 function requireEnv(key: string): string {
   let value = process.env[key];
@@ -9,13 +16,16 @@ function requireEnv(key: string): string {
   return value.trim();
 }
 
-let countryData = await getCountryData(
-  import.meta.dirname + "/data/countries.json.br",
-);
+let geo = new RandomGeographer({
+  countryData: await readCountryData(
+    import.meta.dirname + "/data/countries.json.br",
+  ),
+  maxAttempts: 1000,
+  excludedCountriesIso: ["IL"],
+});
 
-let bot = new Bot(
-  countryData,
-  new LoggingMaps(
+let maps = new LoggingMaps(
+  new GoogleMaps(
     {
       size: "640x480",
       fov: "60",
@@ -24,11 +34,12 @@ let bot = new Bot(
     },
     requireEnv("BSKY_RANDOM_PLACES_MAPS_SECRET"),
   ),
-  await Bluesky.login({
-    service: "https://bsky.social",
-    identifier: requireEnv("BSKY_RANDOM_PLACES_USERNAME"),
-    password: requireEnv("BSKY_RANDOM_PLACES_PASSWORD"),
-  }),
 );
 
-await bot.run();
+let bluesky = await Bluesky.login({
+  service: "https://bsky.social",
+  identifier: requireEnv("BSKY_RANDOM_PLACES_USERNAME"),
+  password: requireEnv("BSKY_RANDOM_PLACES_PASSWORD"),
+});
+
+while (!(await run(geo, maps, bluesky))) {}
